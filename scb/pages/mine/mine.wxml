@@ -1,0 +1,19 @@
+<view class="mine-page">
+  <view class="profile" bindtap="onProfileTap">
+    <image class="avatar" src="{{user.avatarUrl || defaultAvatar}}" mode="aspectFill" />
+    <view class="info">
+      <text class="name">{{loggedIn ? user.nickName : '未登录'}}</text>
+      <text class="sub">{{loggedIn ? (user.phone || '已绑定微信') : '点击登录'}}</text>
+    </view>
+  </view>
+
+  <view class="menu">
+    <view class="menu-item" bindtap="go" data-url="/pages/order/order">我的订单</view>
+    <view class="menu-item" bindtap="goChat">联系客服</view>
+    <view class="menu-item" bindtap="rate">服务评价</view>
+  </view>
+
+  <button wx:if="{{loggedIn}}" class="logout" bindtap="onLogout">退出登录</button>
+</view>
+
+<satisfaction-modal wx:if="{{showRate}}" visible="{{showRate}}" bind:submit="onRateSubmit" bind:close="onRateClose" />

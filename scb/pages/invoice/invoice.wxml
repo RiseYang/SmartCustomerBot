@@ -1,0 +1,27 @@
+<view class="biz-page">
+  <view class="form">
+    <view class="field">
+      <text class="label">订单号 *</text>
+      <input class="input" value="{{form.orderId}}" data-key="orderId" bindinput="onField" />
+    </view>
+    <view class="field">
+      <text class="label">发票类型</text>
+      <picker mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onType">
+        <view class="picker">{{types[typeIndex]}}</view>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="label">发票抬头 *</text>
+      <input class="input" value="{{form.title}}" data-key="title" bindinput="onField" />
+    </view>
+    <view class="field">
+      <text class="label">税号（企业）</text>
+      <input class="input" value="{{form.taxNo}}" data-key="taxNo" bindinput="onField" />
+    </view>
+    <view class="field">
+      <text class="label">接收邮箱 *</text>
+      <input class="input" type="text" value="{{form.email}}" data-key="email" bindinput="onField" />
+    </view>
+    <button type="primary" loading="{{loading}}" bindtap="submit">提交申请</button>
+  </view>
+</view>

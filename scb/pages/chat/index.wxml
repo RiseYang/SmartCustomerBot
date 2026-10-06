@@ -1,0 +1,45 @@
+<view class="chat-page">
+  <scroll-view
+    class="message-list"
+    scroll-y="{{true}}"
+    scroll-into-view="{{scrollIntoView}}"
+    scroll-with-animation="{{true}}"
+  >
+    <block wx:for="{{messages}}" wx:key="id">
+      <message-item
+        id="msg-{{item.id}}"
+        msg="{{item.payload}}"
+        from-user="{{item.fromUser}}"
+        user-avatar="{{userAvatar}}"
+        bind:action="onMessageAction"
+        bind:formsubmit="onFormSubmit"
+      ></message-item>
+    </block>
+    <view wx:if="{{typing}}" class="typing">小智正在输入...</view>
+  </scroll-view>
+
+  <view wx:if="{{humanMode}}" class="human-bar">
+    人工客服接待中 · 排队号 {{handoffInfo.queueNo ? handoffInfo.queueNo : '-'}}
+  </view>
+
+  <view class="input-bar">
+    <view class="tool" bindtap="chooseImage">图</view>
+    <view class="tool" bindtap="chooseFile">文件</view>
+    <view class="tool" bindtap="endSession">结束</view>
+    <input
+      class="text-input"
+      confirm-type="send"
+      value="{{inputText}}"
+      bindinput="onInput"
+      bindconfirm="sendText"
+      placeholder="描述您的问题..."
+    ></input>
+    <button class="send-btn" size="mini" type="primary" bindtap="sendText">发送</button>
+  </view>
+
+  <satisfaction-modal
+    visible="{{showSatisfaction}}"
+    bind:submit="onSatisfaction"
+    bind:close="onSatisfactionClose"
+  ></satisfaction-modal>
+</view>

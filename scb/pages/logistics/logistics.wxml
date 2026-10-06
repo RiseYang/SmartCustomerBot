@@ -1,0 +1,22 @@
+<view class="biz-page">
+  <view class="search-bar">
+    <input class="search" placeholder="请输入订单号" value="{{orderId}}" bindinput="onOrderId" />
+    <button size="mini" type="primary" bindtap="track">跟踪</button>
+  </view>
+
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+
+  <view wx:if="{{info}}" class="panel">
+    <view class="line"><text class="k">承运商</text>{{info.company}}</view>
+    <view class="line"><text class="k">运单号</text>{{info.trackingNo}}</view>
+    <view class="timeline">
+      <view wx:for="{{info.traces}}" wx:key="time" class="trace">
+        <view class="dot"></view>
+        <view class="content">
+          <text class="time">{{item.time}}</text>
+          <text class="desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,49 @@
+.mine-page {
+  min-height: 100vh;
+  background: #f6f7f9;
+}
+.profile {
+  display: flex;
+  align-items: center;
+  padding: 48rpx 32rpx;
+  background: linear-gradient(135deg, #07c160, #06ae56);
+  color: #fff;
+}
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  margin-right: 24rpx;
+}
+.name {
+  font-size: 36rpx;
+  font-weight: 600;
+  display: block;
+}
+.sub {
+  font-size: 26rpx;
+  opacity: 0.85;
+  margin-top: 8rpx;
+  display: block;
+}
+.menu {
+  margin: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+.menu-item {
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 30rpx;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.logout {
+  margin: 48rpx 32rpx;
+  background: #fff;
+  color: #e64340;
+  border-radius: 12rpx;
+}

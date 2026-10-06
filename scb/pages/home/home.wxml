@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero-title">SmartCustomerBot</view>
+    <view class="hero-sub">7×24 智能客服 · 自助办理 · 一键转人工</view>
+    <button class="chat-entry" type="primary" bindtap="goChat">开始对话</button>
+  </view>
+
+  <view class="section-title">自助服务</view>
+  <view class="grid">
+    <view class="grid-item" bindtap="go" data-url="/pages/order/order">
+      <text class="icon">📦</text>
+      <text>订单查询</text>
+    </view>
+    <view class="grid-item" bindtap="go" data-url="/pages/logistics/logistics">
+      <text class="icon">🚚</text>
+      <text>物流跟踪</text>
+    </view>
+    <view class="grid-item" bindtap="go" data-url="/pages/invoice/invoice">
+      <text class="icon">🧾</text>
+      <text>发票申请</text>
+    </view>
+    <view class="grid-item" bindtap="go" data-url="/pages/return/return">
+      <text class="icon">↩️</text>
+      <text>退换货</text>
+    </view>
+  </view>
+
+  <view class="section-title">能力说明</view>
+  <view class="features">
+    <view class="feat">多轮对话与上下文理解</view>
+    <view class="feat">意图识别与模糊提问澄清</view>
+    <view class="feat">图文视频、快捷按钮与表单</view>
+    <view class="feat">答不上自动转人工并带会话摘要</view>
+  </view>
+</view>

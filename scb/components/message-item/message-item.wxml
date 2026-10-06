@@ -1,0 +1,69 @@
+<view class="msg-row {{fromUser ? 'from-user' : 'from-bot'}}">
+  <image wx:if="{{!fromUser}}" class="avatar" src="{{botAvatar}}" mode="aspectFill" />
+  <view class="bubble-wrap">
+    <view wx:if="{{msg.type === 'text' || msg.type === 'system'}}" class="bubble text {{msg.type === 'system' ? 'system' : ''}}">
+      <text user-select>{{msg.content}}</text>
+    </view>
+
+    <view wx:elif="{{msg.type === 'image'}}" class="bubble media">
+      <image class="msg-image" src="{{msg.url}}" mode="widthFix" bindtap="onPreviewImage" data-url="{{msg.url}}" />
+      <text wx:if="{{msg.alt}}" class="media-alt">{{msg.alt}}</text>
+    </view>
+
+    <view wx:elif="{{msg.type === 'video'}}" class="bubble media">
+      <video class="msg-video" src="{{msg.url}}" poster="{{msg.poster}}" title="{{msg.title}}" controls />
+    </view>
+
+    <view wx:elif="{{msg.type === 'card'}}" class="bubble card">
+      <view class="card-title">{{msg.title}}</view>
+      <view class="card-desc">{{msg.desc}}</view>
+      <view class="card-items">
+        <view
+          wx:for="{{msg.items}}"
+          wx:key="name"
+          class="card-item"
+          data-path="{{item.path}}"
+          bindtap="onCardTap"
+        >
+          {{item.name}}
+          <text class="arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:elif="{{msg.type === 'buttons'}}" class="bubble buttons">
+      <button
+        wx:for="{{msg.buttons}}"
+        wx:key="label"
+        class="quick-btn"
+        size="mini"
+        data-action="{{item.action}}"
+        bindtap="onButtonTap"
+      >
+        {{item.label}}
+      </button>
+    </view>
+
+    <view wx:elif="{{msg.type === 'form'}}" class="bubble form-panel">
+      <view class="form-title">信息收集</view>
+      <view wx:for="{{msg.fields}}" wx:key="key" class="form-field">
+        <text class="label">{{item.label}}{{item.required ? ' *' : ''}}</text>
+        <input
+          class="input"
+          data-key="{{item.key}}"
+          placeholder="请输入{{item.label}}"
+          value="{{formValues[item.key]}}"
+          bindinput="onFormInput"
+        />
+      </view>
+      <button class="submit-form" size="mini" type="primary" data-form-id="{{msg.formId}}" bindtap="onFormSubmit">
+        提交
+      </button>
+    </view>
+
+    <view wx:elif="{{msg.type === 'file'}}" class="bubble file">
+      <text class="file-name">📎 {{msg.name || '已上传文件'}}</text>
+    </view>
+  </view>
+  <image wx:if="{{fromUser}}" class="avatar user" src="{{userAvatar}}" mode="aspectFill" />
+</view>
