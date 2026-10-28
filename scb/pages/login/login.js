@@ -3,7 +3,7 @@ const { DEFAULT_USER_AVATAR } = require('../../utils/constants')
 
 Page({
   data: {
-    avatarUrl: DEFAULT_USER_AVATAR,
+    userAvatar: DEFAULT_USER_AVATAR,
     nickName: '',
     phone: '',
     loading: false,
@@ -16,8 +16,19 @@ Page({
     }
   },
 
-  onChooseAvatar(e) {
-    this.setData({ avatarUrl: e.detail.avatarUrl })
+  onChooseAvatar() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const file = res.tempFiles && res.tempFiles[0]
+        const path = file && file.tempFilePath
+        if (typeof path === 'string' && path) {
+          this.setData({ userAvatar: path })
+        }
+      },
+    })
   },
 
   onNick(e) {
@@ -36,8 +47,9 @@ Page({
     this.setData({ loading: true })
     try {
       await login({
-        nickName: this.data.nickName,
-        avatarUrl: this.data.avatarUrl,
+        nickName: this.data.nickName.trim(),
+        avatarUrl: this.data.userAvatar,
+        phone: this.data.phone,
       })
       if (this.data.phone) {
         await register({ phone: this.data.phone })

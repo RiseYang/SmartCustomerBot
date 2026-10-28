@@ -1,5 +1,6 @@
 const { request } = require('./api')
 const { USE_MOCK } = require('../config')
+const db = require('./db')
 
 /** 消息类型：text | image | video | card | buttons | form | file | system */
 const INTENTS = {
@@ -100,11 +101,6 @@ function buildMockReply(userText, session) {
             type: 'text',
             content: '请提供订单号，或点击下方进入物流查询页。',
           },
-          {
-            type: 'image',
-            url: 'https://mmbiz.qpic.cn/mmbiz_png/example_logistics.png',
-            alt: '物流示意',
-          },
           { type: 'buttons', buttons: [{ label: '物流查询', action: 'nav:/pages/logistics/logistics' }] },
         ],
         context: ctx,
@@ -145,10 +141,12 @@ function buildMockReply(userText, session) {
       }
     case INTENTS.HUMAN:
       return {
-        messages: [{ type: 'system', content: '正在为您转接人工客服，请稍候…' }],
+        messages: [
+          { type: 'text', content: '请点击下方按钮进入人工客服会话，并发送您的问题。' },
+          { type: 'customerService', label: '联系人工客服' },
+        ],
         context: ctx,
         intentSummary: { intent, userText },
-        handoff: true,
       }
     default:
       ctx.failCount = (ctx.failCount || 0) + 1
@@ -170,14 +168,28 @@ function buildMockReply(userText, session) {
  * @param {{ sessionId, text, history, context, attachments? }} payload
  */
 async function sendMessage(payload) {
+  db.insertMessage(payload.sessionId, {
+    fromUser: true,
+    type: 'text',
+    content: payload.text,
+  })
+
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 400))
     const result = buildMockReply(payload.text, {
       context: payload.context || {},
     })
-    if (result.proactive) {
-      setTimeout(() => {}, 0)
+    if (payload.sessionId && result.context) {
+      db.updateSession(payload.sessionId, { context: result.context })
     }
+    ;(result.messages || []).forEach((m) => {
+      db.insertMessage(payload.sessionId, {
+        fromUser: false,
+        type: m.type,
+        content: m.content || '',
+        payload: m,
+      })
+    })
     return result
   }
   return request({
@@ -188,38 +200,25 @@ async function sendMessage(payload) {
 }
 
 async function createSession() {
-  if (USE_MOCK) {
-    return { sessionId: 'sess_' + Date.now(), context: { failCount: 0 } }
-  }
-  return request({ url: '/chat/session', method: 'POST' })
-}
-
-async function handoffToHuman(payload) {
-  if (USE_MOCK) {
-    return { queueNo: 12, estimatedWait: '约 2 分钟', ticketId: 'HD' + Date.now() }
-  }
-  return request({
-    url: '/chat/handoff',
-    method: 'POST',
-    data: payload,
-  })
+  const row = db.createSession()
+  return { sessionId: row.id, context: row.context || { failCount: 0 } }
 }
 
 async function submitSatisfaction(payload) {
-  if (USE_MOCK) {
-    return { success: true }
+  db.insertSatisfaction(payload)
+  if (!USE_MOCK) {
+    return request({
+      url: '/chat/satisfaction',
+      method: 'POST',
+      data: payload,
+    })
   }
-  return request({
-    url: '/chat/satisfaction',
-    method: 'POST',
-    data: payload,
-  })
+  return { success: true }
 }
 
 module.exports = {
   INTENTS,
   sendMessage,
   createSession,
-  handoffToHuman,
   submitSatisfaction,
 }

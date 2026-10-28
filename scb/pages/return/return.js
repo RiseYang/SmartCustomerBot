@@ -43,11 +43,7 @@ Page({
         ...this.data.form,
         images: this.data.images,
       })
-      wx.showModal({
-        title: '已受理',
-        content: res.message || '工单已创建',
-        showCancel: false,
-      })
+      wx.showToast({ title: res.message || '工单已创建', icon: 'none', duration: 2500 })
     } finally {
       this.setData({ loading: false })
     }

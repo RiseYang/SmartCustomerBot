@@ -20,8 +20,6 @@ Page({
     sessionId: '',
     context: { failCount: 0 },
     intentTrail: [],
-    humanMode: false,
-    handoffInfo: {},
     showSatisfaction: false,
     userAvatar: DEFAULT_USER_AVATAR,
   },
@@ -95,11 +93,6 @@ Page({
 
   async handleUserMessage(text, extra = {}) {
     this.pushUser(text)
-    if (this.data.humanMode) {
-      this.pushBot([{ type: 'system', content: '消息已同步至人工客服（演示模式）' }])
-      return
-    }
-
     this.setData({ typing: true })
     try {
       const history = this.data.messages.slice(-20).map((m) => ({
@@ -142,30 +135,10 @@ Page({
   },
 
   async doHandoff() {
-    const summary = this.buildIntentSummary()
-    const transcript = this.data.messages.map((m) => ({
-      fromUser: m.fromUser,
-      payload: m.payload,
-    }))
-    const info = await chatService.handoffToHuman({
-      sessionId: this.data.sessionId,
-      transcript,
-      intentSummary: summary,
-    })
-    this.setData({ humanMode: true, handoffInfo: info })
     this.pushBot([
-      {
-        type: 'text',
-        content: `已接入人工队列，${info.estimatedWait || ''}。工单号：${info.ticketId || '-'}`,
-      },
+      { type: 'text', content: '请点击下方按钮进入人工客服会话，并发送您的问题。' },
+      { type: 'customerService', label: '联系人工客服' },
     ])
-  },
-
-  buildIntentSummary() {
-    const trail = this.data.intentTrail
-    if (!trail.length) return '用户咨询一般问题'
-    const last = trail[trail.length - 1]
-    return `最近意图：${last.intent || 'unknown'}；末次表述：${last.userText || ''}`
   },
 
   onMessageAction(e) {

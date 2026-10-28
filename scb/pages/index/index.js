@@ -17,12 +17,19 @@ Page({
       url: '../logs/logs'
     })
   },
-  onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-    const { nickName } = this.data.userInfo
-    this.setData({
-      "userInfo.avatarUrl": avatarUrl,
-      hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
+  onChooseAvatar() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      success: (res) => {
+        const path = res.tempFiles && res.tempFiles[0] && res.tempFiles[0].tempFilePath
+        if (typeof path !== 'string' || !path) return
+        const { nickName } = this.data.userInfo
+        this.setData({
+          'userInfo.avatarUrl': path,
+          hasUserInfo: nickName && path && path !== defaultAvatarUrl,
+        })
+      },
     })
   },
   onInputChange(e) {

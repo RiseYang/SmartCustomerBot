@@ -1,17 +1,17 @@
 <view class="msg-row {{fromUser ? 'from-user' : 'from-bot'}}">
-  <image wx:if="{{!fromUser}}" class="avatar" src="{{botAvatar}}" mode="aspectFill" />
+  <image wx:if="{{!fromUser}}" class="avatar" src="{{botAvatar || ''}}" mode="aspectFill" />
   <view class="bubble-wrap">
     <view wx:if="{{msg.type === 'text' || msg.type === 'system'}}" class="bubble text {{msg.type === 'system' ? 'system' : ''}}">
       <text user-select>{{msg.content}}</text>
     </view>
 
     <view wx:elif="{{msg.type === 'image'}}" class="bubble media">
-      <image class="msg-image" src="{{msg.url}}" mode="widthFix" bindtap="onPreviewImage" data-url="{{msg.url}}" />
+      <image class="msg-image" src="{{msg.url || ''}}" mode="widthFix" bindtap="onPreviewImage" data-url="{{msg.url}}" />
       <text wx:if="{{msg.alt}}" class="media-alt">{{msg.alt}}</text>
     </view>
 
     <view wx:elif="{{msg.type === 'video'}}" class="bubble media">
-      <video class="msg-video" src="{{msg.url}}" poster="{{msg.poster}}" title="{{msg.title}}" controls />
+      <video class="msg-video" src="{{msg.url || ''}}" poster="{{msg.poster || ''}}" controls></video>
     </view>
 
     <view wx:elif="{{msg.type === 'card'}}" class="bubble card">
@@ -44,6 +44,10 @@
       </button>
     </view>
 
+    <view wx:elif="{{msg.type === 'customerService'}}" class="bubble buttons">
+      <button class="quick-btn customer-service-btn" size="mini" open-type="contact">{{msg.label || '联系人工客服'}}</button>
+    </view>
+
     <view wx:elif="{{msg.type === 'form'}}" class="bubble form-panel">
       <view class="form-title">信息收集</view>
       <view wx:for="{{msg.fields}}" wx:key="key" class="form-field">
@@ -65,5 +69,5 @@
       <text class="file-name">📎 {{msg.name || '已上传文件'}}</text>
     </view>
   </view>
-  <image wx:if="{{fromUser}}" class="avatar user" src="{{userAvatar}}" mode="aspectFill" />
+  <image wx:if="{{fromUser}}" class="avatar user" src="{{userAvatar || ''}}" mode="aspectFill" />
 </view>

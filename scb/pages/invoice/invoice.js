@@ -40,11 +40,7 @@ Page({
         ...this.data.form,
         invoiceType: this.data.types[this.data.typeIndex],
       })
-      wx.showModal({
-        title: '提交成功',
-        content: res.message || '申请已受理',
-        showCancel: false,
-      })
+      wx.showToast({ title: res.message || '申请已受理', icon: 'none', duration: 2500 })
     } finally {
       this.setData({ loading: false })
     }

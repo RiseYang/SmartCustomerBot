@@ -1,5 +1,5 @@
 const { getStoredUser, isLoggedIn, logout } = require('../../services/auth')
-const chatService = require('../../services/chat')
+const db = require('../../services/db')
 const { DEFAULT_USER_AVATAR } = require('../../utils/constants')
 
 Page({
@@ -7,7 +7,11 @@ Page({
     user: {},
     loggedIn: false,
     defaultAvatar: DEFAULT_USER_AVATAR,
-    showRate: false,
+    showRateDetail: false,
+    showRateList: false,
+    satisfactionList: [],
+    satisfaction: null,
+    starList: [1, 2, 3, 4, 5],
   },
 
   onShow() {
@@ -45,18 +49,32 @@ Page({
   },
 
   rate() {
-    this.setData({ showRate: true })
+    const userId = db.getCurrentUserId()
+    const satisfactionList = userId
+      ? db.load().satisfaction
+          .filter((item) => item.userId === userId)
+          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+      : []
+    this.setData({ showRateList: true, satisfactionList })
   },
 
-  async onRateSubmit(e) {
-    await chatService.submitSatisfaction({ sessionId: 'manual', ...e.detail })
-    wx.showToast({ title: '已提交', icon: 'success' })
-    this.setData({ showRate: false })
+  openRateDetail(e) {
+    const index = Number(e.currentTarget.dataset.index)
+    this.setData({
+      satisfaction: this.data.satisfactionList[index] || null,
+      showRateDetail: true,
+    })
   },
 
-  onRateClose() {
-    this.setData({ showRate: false })
+  closeRateList() {
+    this.setData({ showRateList: false })
   },
+
+  closeRateDetail() {
+    this.setData({ showRateDetail: false })
+  },
+
+  preventTap() {},
 
   onLogout() {
     logout()

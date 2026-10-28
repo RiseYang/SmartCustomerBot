@@ -1,11 +1,11 @@
 <view class="login-page">
   <view class="brand">SmartCustomerBot</view>
-  <view class="hint">微信授权登录后即可使用智能客服与自助服务</view>
+  <view class="hint">登录后即可使用智能客服与自助服务，资料写入 scb_db</view>
 
-  <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-    <image class="avatar" src="{{avatarUrl}}" mode="aspectFill" />
+  <view class="avatar-wrapper" hover-class="none" bindtap="onChooseAvatar">
+    <image class="avatar" src="{{userAvatar}}" mode="aspectFill" />
     <text class="avatar-tip">点击设置头像</text>
-  </button>
+  </view>
 
   <view class="field">
     <text class="label">昵称</text>

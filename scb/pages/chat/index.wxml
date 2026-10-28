@@ -18,10 +18,6 @@
     <view wx:if="{{typing}}" class="typing">小智正在输入...</view>
   </scroll-view>
 
-  <view wx:if="{{humanMode}}" class="human-bar">
-    人工客服接待中 · 排队号 {{handoffInfo.queueNo ? handoffInfo.queueNo : '-'}}
-  </view>
-
   <view class="input-bar">
     <view class="tool" bindtap="chooseImage">图</view>
     <view class="tool" bindtap="chooseFile">文件</view>

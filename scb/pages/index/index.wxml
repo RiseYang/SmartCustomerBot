@@ -3,12 +3,12 @@
   <view class="container">
     <view class="userinfo">
       <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
-        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <view class="avatar-wrapper" bindtap="onChooseAvatar">
           <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
-        </button>
+        </view>
         <view class="nickname-wrapper">
           <text class="nickname-label">昵称</text>
-          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
+          <input class="nickname-input" placeholder="请输入昵称" bindinput="onInputChange" />
         </view>
       </block>
       <block wx:elif="{{!hasUserInfo}}">

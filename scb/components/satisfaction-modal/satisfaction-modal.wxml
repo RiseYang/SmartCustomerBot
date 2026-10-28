@@ -3,7 +3,7 @@
     <view class="title">本次服务满意吗？</view>
     <view class="stars">
       <text
-        wx:for="{{5}}"
+        wx:for="{{starList}}"
         wx:key="*this"
         class="star {{score >= item ? 'on' : ''}}"
         data-score="{{item}}"

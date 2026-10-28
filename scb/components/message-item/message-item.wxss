@@ -79,6 +79,11 @@
   color: #07c160;
   border: 1rpx solid #07c160;
 }
+.customer-service-btn {
+  border-color: #07c160;
+  background: #07c160;
+  color: #fff;
+}
 .form-panel .form-title {
   font-weight: 600;
   margin-bottom: 16rpx;

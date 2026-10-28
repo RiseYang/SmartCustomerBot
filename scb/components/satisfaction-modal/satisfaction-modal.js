@@ -6,6 +6,7 @@ Component({
     score: 0,
     comment: '',
     tags: [],
+    starList: [1, 2, 3, 4, 5],
     tagOptions: ['响应及时', '解答专业', '态度友好', '问题未解决', '等待过长'],
   },
   methods: {

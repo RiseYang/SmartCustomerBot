@@ -5,8 +5,9 @@ module.exports = {
   API_BASE,
   /** 客服会话 WebSocket（可选） */
   WS_CHAT: 'wss://api.example.com/ws/chat',
-  /** 是否使用本地 Mock（无后端时可 true） */
+  /** 意图回复仍走本地规则；业务数据一律写入 scb_db */
   USE_MOCK: true,
+  DB_NAME: 'scb_db',
   /** 转人工关键词阈值：连续无法理解次数 */
   HUMAN_HANDOFF_FAIL_COUNT: 3,
 }

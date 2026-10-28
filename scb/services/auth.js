@@ -1,5 +1,4 @@
-const { request } = require('./api')
-const { USE_MOCK } = require('../config')
+const db = require('./db')
 
 function wxLogin() {
   return new Promise((resolve, reject) => {
@@ -13,49 +12,40 @@ function wxLogin() {
   })
 }
 
-/** 登录：code + 可选手机号（需后端解密） */
+function persistSession(user) {
+  const token = 'scb_' + user.id
+  wx.setStorageSync('token', token)
+  wx.setStorageSync('userInfo', user)
+  db.setCurrentUserId(user.id)
+  return user
+}
+
+/** 登录：写入 scb_db.users，已存在则更新资料 */
 async function login(payload = {}) {
-  const code = payload.code || (await wxLogin())
-  if (USE_MOCK) {
-    const user = {
-      id: 'u_mock_001',
-      nickName: payload.nickName || '微信用户',
-      avatarUrl: payload.avatarUrl || '',
-      phone: payload.phone || '',
-      token: 'mock_token_' + Date.now(),
-    }
-    wx.setStorageSync('token', user.token)
-    wx.setStorageSync('userInfo', user)
-    return user
-  }
-  const data = await request({
-    url: '/auth/wx-login',
-    method: 'POST',
-    data: { code, ...payload },
+  await wxLogin().catch(() => '')
+  const user = db.upsertUser({
+    nickName: payload.nickName,
+    avatarUrl: payload.avatarUrl,
+    phone: payload.phone,
   })
-  if (data.token) wx.setStorageSync('token', data.token)
-  if (data.user) wx.setStorageSync('userInfo', data.user)
-  return data.user || data
+  return persistSession(user)
 }
 
 /** 注册 / 完善资料 */
 async function register(profile) {
-  if (USE_MOCK) {
-    const prev = wx.getStorageSync('userInfo') || {}
-    const user = { ...prev, ...profile, registered: true }
-    wx.setStorageSync('userInfo', user)
-    return user
+  const prev = wx.getStorageSync('userInfo') || {}
+  const userId = prev.id || db.getCurrentUserId()
+  let user = userId ? db.updateUser(userId, { ...profile, registered: true }) : null
+  if (!user) {
+    user = db.upsertUser({ ...prev, ...profile })
   }
-  return request({
-    url: '/auth/register',
-    method: 'POST',
-    data: profile,
-  })
+  return persistSession(user)
 }
 
 function logout() {
   wx.removeStorageSync('token')
   wx.removeStorageSync('userInfo')
+  db.clearSessionAuth()
 }
 
 function getStoredUser() {
