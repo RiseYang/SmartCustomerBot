@@ -2,7 +2,7 @@ const { trackLogistics } = require('../../services/business')
 
 Page({
   data: {
-    orderId: 'ORD20250928001',
+    orderId: '',
     info: null,
     error: '',
   },
@@ -23,11 +23,15 @@ Page({
       return
     }
     this.setData({ error: '', info: null })
-    const res = await trackLogistics(orderId)
-    if (res.error) {
-      this.setData({ error: res.error })
-      return
+    try {
+      const res = await trackLogistics(orderId)
+      if (res.error) {
+        this.setData({ error: res.error })
+        return
+      }
+      this.setData({ info: res })
+    } catch (e) {
+      this.setData({ error: (e && e.message) || '物流查询失败' })
     }
-    this.setData({ info: res })
   },
 })

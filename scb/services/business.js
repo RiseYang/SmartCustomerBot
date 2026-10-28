@@ -1,30 +1,35 @@
-const db = require('./db')
-const { getStoredUser } = require('./auth')
-
-function currentUserId() {
-  const user = getStoredUser()
-  return (user && user.id) || db.getCurrentUserId()
-}
+const { request } = require('./api')
 
 async function queryOrders(keyword) {
-  const list = db.queryOrders(currentUserId(), keyword)
-  return { list }
+  const data = {}
+  const kw = (keyword || '').trim()
+  if (kw) data.keyword = kw
+  return request({
+    url: '/biz/orders',
+    data,
+  })
 }
 
 async function trackLogistics(orderId) {
-  const info = db.findLogistics(orderId)
-  if (!info) return { error: '未找到物流信息' }
-  return info
+  return request({
+    url: '/biz/logistics/' + encodeURIComponent(orderId),
+  })
 }
 
 async function applyInvoice(form) {
-  const row = db.insertInvoice(form)
-  return { success: true, applyId: row.id, message: '发票申请已写入 scb_db，3 个工作日内开具' }
+  return request({
+    url: '/biz/invoice/apply',
+    method: 'POST',
+    data: form,
+  })
 }
 
 async function applyReturn(form) {
-  const row = db.insertReturn(form)
-  return { success: true, ticketId: row.id, message: '退换货申请已写入 scb_db，客服将联系您' }
+  return request({
+    url: '/biz/return/apply',
+    method: 'POST',
+    data: form,
+  })
 }
 
 module.exports = {

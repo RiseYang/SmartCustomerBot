@@ -1,4 +1,5 @@
 const chatService = require('../../services/chat')
+const { applyInvoice } = require('../../services/business')
 const { getStoredUser, isLoggedIn } = require('../../services/auth')
 const { DEFAULT_USER_AVATAR } = require('../../utils/constants')
 const { HUMAN_HANDOFF_FAIL_COUNT } = require('../../config')
@@ -113,6 +114,8 @@ Page({
 
       if (res.messages && res.messages.length) {
         this.pushBot(res.messages)
+      } else if (!res.handoff) {
+        wx.showToast({ title: (res && res.message) || '暂时没有回复', icon: 'none' })
       }
 
       if (res.proactive) {
@@ -129,12 +132,22 @@ Page({
           { type: 'buttons', buttons: [{ label: '转人工', action: 'intent:human' }] },
         ])
       }
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '发送失败', icon: 'none' })
     } finally {
       this.setData({ typing: false })
     }
   },
 
   async doHandoff() {
+    try {
+      await chatService.handoff({
+        sessionId: this.data.sessionId,
+        transcript: this.data.messages.slice(-20),
+      })
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '转人工失败', icon: 'none' })
+    }
     this.pushBot([
       { type: 'text', content: '请点击下方按钮进入人工客服会话，并发送您的问题。' },
       { type: 'customerService', label: '联系人工客服' },
@@ -159,9 +172,23 @@ Page({
     }
   },
 
-  onFormSubmit(e) {
+  async onFormSubmit(e) {
     const { formId, values } = e.detail
-    wx.showToast({ title: '已提交', icon: 'success' })
+    if (formId === 'invoice_quick') {
+      try {
+        const res = await applyInvoice({
+          orderId: values.orderId,
+          title: values.title,
+          email: values.email,
+          invoiceType: '电子普通发票',
+        })
+        this.pushUser({ type: 'text', content: '发票申请 ' + (values.orderId || '') })
+        this.pushBot([{ type: 'text', content: res.message || '发票申请已提交' }])
+      } catch (err) {
+        wx.showToast({ title: (err && err.message) || '发票提交失败', icon: 'none' })
+      }
+      return
+    }
     this.pushUser({ type: 'text', content: `[表单 ${formId}] ${JSON.stringify(values)}` })
     this.pushBot([{ type: 'text', content: '已收到您的信息，我们会尽快处理。' }])
   },

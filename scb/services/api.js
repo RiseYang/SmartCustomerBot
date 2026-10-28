@@ -20,11 +20,14 @@ function request(options) {
         ...header,
       },
       success(res) {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          resolve(res.data)
-        } else {
-          reject(res.data || { message: '请求失败' })
+        const body = res.data
+        const bizFail = body && typeof body === 'object' && Object.prototype.hasOwnProperty.call(body, 'code') && body.code !== 0
+        if (res.statusCode >= 200 && res.statusCode < 300 && !bizFail) {
+          resolve(body)
+          return
         }
+        const message = (body && (body.message || body.msg)) || '请求失败'
+        reject(Object.assign({}, body && typeof body === 'object' ? body : {}, { message }))
       },
       fail(err) {
         reject(err)

@@ -21,6 +21,8 @@ Page({
     try {
       const res = await queryOrders(this.data.keyword.trim())
       this.setData({ list: res.list || [] })
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '订单加载失败', icon: 'none' })
     } finally {
       this.setData({ loading: false })
     }

@@ -5,9 +5,14 @@ Component({
   data: {
     score: 0,
     comment: '',
-    tags: [],
     starList: [1, 2, 3, 4, 5],
-    tagOptions: ['响应及时', '解答专业', '态度友好', '问题未解决', '等待过长'],
+    tagOptions: [
+      { name: '响应及时', tone: 'good', selected: false },
+      { name: '解答专业', tone: 'good', selected: false },
+      { name: '态度友好', tone: 'good', selected: false },
+      { name: '问题未解决', tone: 'bad', selected: false },
+      { name: '等待过长', tone: 'bad', selected: false },
+    ],
   },
   methods: {
     preventMove() {},
@@ -18,12 +23,11 @@ Component({
       this.setData({ comment: e.detail.value })
     },
     onTag(e) {
-      const tag = e.currentTarget.dataset.tag
-      const tags = [...this.data.tags]
-      const i = tags.indexOf(tag)
-      if (i >= 0) tags.splice(i, 1)
-      else tags.push(tag)
-      this.setData({ tags })
+      const name = e.currentTarget.dataset.tag
+      const tagOptions = this.data.tagOptions.map((item) => (
+        item.name === name ? { ...item, selected: !item.selected } : item
+      ))
+      this.setData({ tagOptions })
     },
     onSkip() {
       this.triggerEvent('close', { skipped: true })
@@ -37,12 +41,16 @@ Component({
       this.triggerEvent('submit', {
         score: this.data.score,
         comment: this.data.comment,
-        tags: this.data.tags,
+        tags: this.data.tagOptions.filter((item) => item.selected).map((item) => item.name),
       })
       this.reset()
     },
     reset() {
-      this.setData({ score: 0, comment: '', tags: [] })
+      this.setData({
+        score: 0,
+        comment: '',
+        tagOptions: this.data.tagOptions.map((item) => ({ ...item, selected: false })),
+      })
     },
   },
 })

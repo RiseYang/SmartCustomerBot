@@ -66,7 +66,7 @@ Page({
         }
       }, 400)
     } catch (e) {
-      wx.showToast({ title: '登录失败', icon: 'none' })
+      wx.showToast({ title: (e && e.message) || '登录失败', icon: 'none' })
     } finally {
       this.setData({ loading: false })
     }

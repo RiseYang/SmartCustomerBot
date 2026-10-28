@@ -44,6 +44,8 @@ Page({
         images: this.data.images,
       })
       wx.showToast({ title: res.message || '工单已创建', icon: 'none', duration: 2500 })
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '申请失败', icon: 'none' })
     } finally {
       this.setData({ loading: false })
     }

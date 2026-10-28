@@ -1,4 +1,6 @@
-const db = require('./db')
+const { request } = require('./api')
+
+const OPENID_KEY = 'scb_openid'
 
 function wxLogin() {
   return new Promise((resolve, reject) => {
@@ -12,40 +14,56 @@ function wxLogin() {
   })
 }
 
-function persistSession(user) {
-  const token = 'scb_' + user.id
+/**
+ * 未配置微信密钥时对应 sc_user.openid。
+ * 固定为库里的演示用户，这样订单、物流和申请都落在同一条 MySQL 记录上。
+ */
+function getDevOpenId() {
+  const id = 'mock_openid_001'
+  wx.setStorageSync(OPENID_KEY, id)
+  return id
+}
+
+function persistSession(token, user) {
   wx.setStorageSync('token', token)
   wx.setStorageSync('userInfo', user)
-  db.setCurrentUserId(user.id)
   return user
 }
 
-/** 登录：写入 scb_db.users，已存在则更新资料 */
+/** 登录：写入 MySQL sc_user，已存在则更新资料 */
 async function login(payload = {}) {
-  await wxLogin().catch(() => '')
-  const user = db.upsertUser({
-    nickName: payload.nickName,
-    avatarUrl: payload.avatarUrl,
-    phone: payload.phone,
+  const code = await wxLogin().catch(() => '')
+  const res = await request({
+    url: '/auth/wx-login',
+    method: 'POST',
+    data: {
+      code,
+      devOpenId: getDevOpenId(),
+      nickName: payload.nickName,
+      avatarUrl: payload.avatarUrl,
+      phone: payload.phone,
+    },
   })
-  return persistSession(user)
+  if (!res || !res.token || !res.user) {
+    throw new Error('登录响应无效')
+  }
+  return persistSession(res.token, res.user)
 }
 
 /** 注册 / 完善资料 */
 async function register(profile) {
-  const prev = wx.getStorageSync('userInfo') || {}
-  const userId = prev.id || db.getCurrentUserId()
-  let user = userId ? db.updateUser(userId, { ...profile, registered: true }) : null
-  if (!user) {
-    user = db.upsertUser({ ...prev, ...profile })
-  }
-  return persistSession(user)
+  const user = await request({
+    url: '/auth/register',
+    method: 'POST',
+    data: profile,
+  })
+  const token = wx.getStorageSync('token')
+  return persistSession(token, user)
 }
 
 function logout() {
   wx.removeStorageSync('token')
   wx.removeStorageSync('userInfo')
-  db.clearSessionAuth()
 }
 
 function getStoredUser() {
@@ -63,4 +81,5 @@ module.exports = {
   logout,
   getStoredUser,
   isLoggedIn,
+  getDevOpenId,
 }

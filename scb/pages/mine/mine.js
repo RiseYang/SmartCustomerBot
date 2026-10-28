@@ -1,5 +1,5 @@
 const { getStoredUser, isLoggedIn, logout } = require('../../services/auth')
-const db = require('../../services/db')
+const { listSatisfaction } = require('../../services/chat')
 const { DEFAULT_USER_AVATAR } = require('../../utils/constants')
 
 Page({
@@ -48,14 +48,17 @@ Page({
     wx.switchTab({ url: '/pages/chat/index' })
   },
 
-  rate() {
-    const userId = db.getCurrentUserId()
-    const satisfactionList = userId
-      ? db.load().satisfaction
-          .filter((item) => item.userId === userId)
-          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
-      : []
-    this.setData({ showRateList: true, satisfactionList })
+  async rate() {
+    if (!isLoggedIn()) {
+      wx.navigateTo({ url: '/pages/login/login?redirect=' + encodeURIComponent('/pages/mine/mine') })
+      return
+    }
+    try {
+      const res = await listSatisfaction()
+      this.setData({ showRateList: true, satisfactionList: (res && res.list) || [] })
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '评价加载失败', icon: 'none' })
+    }
   },
 
   openRateDetail(e) {

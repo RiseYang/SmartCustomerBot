@@ -50,14 +50,21 @@
 }
 .tag {
   font-size: 24rpx;
-  padding: 8rpx 20rpx;
+  padding: 10rpx 24rpx;
   border-radius: 999rpx;
   background: #f0f0f0;
   color: #666;
+  border: 2rpx solid #e5e5e5;
 }
 .tag.on {
-  background: #e6f7ef;
-  color: #07c160;
+  background: #07c160;
+  color: #fff;
+  border-color: #07c160;
+}
+.tag.on-bad {
+  background: #ff8f1f;
+  color: #fff;
+  border-color: #ff8f1f;
 }
 .actions {
   display: flex;

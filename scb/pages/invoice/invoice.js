@@ -41,6 +41,8 @@ Page({
         invoiceType: this.data.types[this.data.typeIndex],
       })
       wx.showToast({ title: res.message || '申请已受理', icon: 'none', duration: 2500 })
+    } catch (e) {
+      wx.showToast({ title: (e && e.message) || '申请失败', icon: 'none' })
     } finally {
       this.setData({ loading: false })
     }

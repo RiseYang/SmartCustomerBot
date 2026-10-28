@@ -1,4 +1,4 @@
-/** 本地库 scb_db：用户、订单、物流、发票、退换货、会话、消息、评价 */
+/** 已停用。业务数据改由网关写入 MySQL scb_db，不要再把这里当数据源。 */
 const DB_KEY = 'scb_db'
 const OPENID_KEY = 'scb_openid'
 const SESSION_USER_KEY = 'scb_current_user_id'

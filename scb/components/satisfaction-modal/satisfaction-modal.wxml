@@ -20,11 +20,11 @@
     <view class="tags">
       <text
         wx:for="{{tagOptions}}"
-        wx:key="*this"
-        class="tag {{tags.indexOf(item) >= 0 ? 'on' : ''}}"
-        data-tag="{{item}}"
+        wx:key="name"
+        class="tag {{item.selected && item.tone !== 'bad' ? 'on' : ''}} {{item.selected && item.tone === 'bad' ? 'on-bad' : ''}}"
+        data-tag="{{item.name}}"
         bindtap="onTag"
-      >{{item}}</text>
+      >{{item.name}}</text>
     </view>
     <view class="actions">
       <button size="mini" bindtap="onSkip">稍后</button>

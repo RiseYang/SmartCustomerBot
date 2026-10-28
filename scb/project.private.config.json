@@ -3,6 +3,7 @@
   "projectname": "scb",
   "libVersion": "2.32.3",
   "setting": {
+    "urlCheck": false,
     "compileHotReLoad": true,
     "skylineRenderEnable": false
   }
